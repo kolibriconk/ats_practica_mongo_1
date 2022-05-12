@@ -1,10 +1,7 @@
 package org.example;
 
 import com.mongodb.MongoException;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import org.bson.Document;
 
 import javax.print.Doc;
@@ -20,7 +17,7 @@ public class Client {
         try (MongoClient mongoClient = MongoClients.create(URI)) {
             MongoDatabase database = mongoClient.getDatabase("test");
             MongoCollection<Document> collection = database.getCollection("companies");
-            exercise1(collection);
+            exercise4(collection);
         } catch (MongoException ignored) {
             System.out.println("Cannot connect to mongo host");
         }
@@ -28,5 +25,22 @@ public class Client {
 
     private static void exercise1(MongoCollection<Document> collection) {
 
+    }
+
+    private static void exercise2(MongoCollection<Document> collection){
+        System.out.println("Exercise 2");
+        System.out.println(collection.count(Document.parse("{founded_year: 2000 }")));
+    }
+
+    private static void exercise4(MongoCollection<Document> collection){
+        System.out.println("Exercise 4");
+        String phone="phone";
+        FindIterable<Document> fi = collection.find();
+        MongoCursor<Document> cursor = fi.iterator();
+        while (cursor.hasNext()){
+            String find = cursor.next().get();
+        }
+
+        //collection.updateMany(new Document(), new Document("$set", new Document("tag_list", "phone")));
     }
 }
