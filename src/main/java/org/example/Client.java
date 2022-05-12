@@ -5,6 +5,7 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
 import org.bson.BsonDocument;
+import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.bson.Document;
 
@@ -44,7 +45,7 @@ public class Client {
 
     private static void exercise2(MongoCollection<Document> collection) {
         System.out.println("Exercise 2");
-        System.out.println(collection.count(Document.parse("{founded_year: 2000 }")));
+        System.out.println(collection.countDocuments(new Document("founded_year", 2000)));
     }
 
     /**
@@ -64,9 +65,9 @@ public class Client {
         String phone = "phone";
         FindIterable<Document> fi = collection.find();
         MongoCursor<Document> cursor = fi.iterator();
-        while (cursor.hasNext()) {
-            String find = cursor.next().get();
-        }
+//        while (cursor.hasNext()) {
+//            String find = cursor.next().get();
+//        }
 
         //collection.updateMany(new Document(), new Document("$set", new Document("tag_list", "phone")));
     }
@@ -79,10 +80,12 @@ public class Client {
         System.out.println("Exercise 5:");
         Document filter = new Document("founded_year", new Document("$gt", 2005));
         AggregateIterable<Document> avg = collection
-                .aggregate(
-                        Arrays.asList(
+                .aggregate(Arrays.asList(
                                 Aggregates.match(filter),
-                                Aggregates.group("_id", new BsonField("average", new BsonDocument("$avg", new BsonString("$number_of_employees"))))
+                                Aggregates.group("_id"
+                                        , new BsonField("average"
+                                                , new BsonDocument("$avg"
+                                                , new BsonString("$number_of_employees"))))
                         )
                 );
 
