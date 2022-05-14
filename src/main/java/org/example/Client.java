@@ -4,14 +4,16 @@ import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.BsonField;
+import com.mongodb.client.model.Filters;
 import org.bson.BsonDocument;
-import org.bson.BsonInt32;
 import org.bson.BsonString;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class Client {
 
@@ -60,16 +62,32 @@ public class Client {
         System.out.println("Total: " + distinct.size());
     }
 
+    /**
+     * Afegiu el valor phone a l’atribut tag_list.
+     */
     private static void exercise4(MongoCollection<Document> collection) {
         System.out.println("Exercise 4");
         String phone = "phone";
         FindIterable<Document> fi = collection.find();
-        MongoCursor<Document> cursor = fi.iterator();
-//        while (cursor.hasNext()) {
-//            String find = cursor.next().get();
-//        }
 
-        //collection.updateMany(new Document(), new Document("$set", new Document("tag_list", "phone")));
+        MongoCursor<Document> cursor = fi.iterator();
+        while (cursor.hasNext()) {
+            Object id = cursor.next().get("_id");
+            Bson query = new Document("_id", id);
+            List<Bson> update = Arrays.asList(
+                    Filters.eq("$set",
+                            Filters.eq("tag_list",
+                                    Filters.eq("$concat",
+                                            Arrays.asList("$tag_list", ", ", phone)
+                                    )
+                            )
+                    )
+            );
+            collection.updateOne(query, update);
+        }
+        collection.updateMany(new Document("tag_list",null), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es null
+        collection.updateMany(new Document("tag_list", ", phone"), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es ", phone" (por el update que se hace arriba)
+        System.out.println("Phone appended in tag_list");
     }
 
     /**
