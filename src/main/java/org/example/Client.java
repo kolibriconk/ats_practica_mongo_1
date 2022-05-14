@@ -24,11 +24,11 @@ public class Client {
         try (MongoClient mongoClient = MongoClients.create(URI)) {
             MongoDatabase database = mongoClient.getDatabase("test");
             MongoCollection<Document> collection = database.getCollection("companies");
-            exercise1(collection);
-            exercise2(collection);
-            exercise3(collection);
+            //exercise1(collection);
+            //exercise2(collection);
+            //exercise3(collection);
             exercise4(collection);
-            exercise5(collection);
+            //exercise5(collection);
         } catch (MongoException ignored) {
             System.out.println("Cannot connect to mongo host");
         }
@@ -68,23 +68,18 @@ public class Client {
     private static void exercise4(MongoCollection<Document> collection) {
         System.out.println("Exercise 4");
         String phone = "phone";
-        FindIterable<Document> fi = collection.find();
 
-        MongoCursor<Document> cursor = fi.iterator();
-        while (cursor.hasNext()) {
-            Object id = cursor.next().get("_id");
-            Bson query = new Document("_id", id);
-            List<Bson> update = Arrays.asList(
-                    Filters.eq("$set",
-                            Filters.eq("tag_list",
-                                    Filters.eq("$concat",
-                                            Arrays.asList("$tag_list", ", ", phone)
-                                    )
-                            )
-                    )
-            );
-            collection.updateOne(query, update);
-        }
+        List<Bson> update = Arrays.asList(
+                Filters.eq("$set",
+                        Filters.eq("tag_list",
+                                Filters.eq("$concat",
+                                        Arrays.asList("$tag_list", ", ", phone)
+                                )
+                        )
+                )
+        );
+
+        collection.updateMany(new Document(), update);
         collection.updateMany(new Document("tag_list",null), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es null
         collection.updateMany(new Document("tag_list", ", phone"), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es ", phone" (por el update que se hace arriba)
         System.out.println("Phone appended in tag_list");
