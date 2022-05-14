@@ -24,11 +24,11 @@ public class Client {
         try (MongoClient mongoClient = MongoClients.create(URI)) {
             MongoDatabase database = mongoClient.getDatabase("test");
             MongoCollection<Document> collection = database.getCollection("companies");
-            //exercise1(collection);
-            //exercise2(collection);
-            //exercise3(collection);
+            exercise1(collection);
+            exercise2(collection);
+            exercise3(collection);
             exercise4(collection);
-            //exercise5(collection);
+            exercise5(collection);
         } catch (MongoException ignored) {
             System.out.println("Cannot connect to mongo host");
         }
