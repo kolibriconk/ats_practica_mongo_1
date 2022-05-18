@@ -15,6 +15,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @author: Jose Antonio Ramos Andrades - 1565479
+ * @author: Victor Sanchez Aguilera - 1529721
+ */
 public class Client {
 
     static final String URI = "mongodb://localhost:27017/";
@@ -43,6 +47,7 @@ public class Client {
         Document filter = new Document("name", "MeetMoi");
         Document update = new Document("$inc", new Document("number_of_employees", 1));
         collection.updateMany(filter, update);
+        System.out.println("Augmentat el numero de empleats de MeetMoi");
     }
 
     private static void exercise2(MongoCollection<Document> collection) {
@@ -66,14 +71,13 @@ public class Client {
      * Afegiu el valor phone a l’atribut tag_list.
      */
     private static void exercise4(MongoCollection<Document> collection) {
-        System.out.println("Exercise 4");
-        String phone = "phone";
+        System.out.println("Exercise 4:");
 
         List<Bson> update = Arrays.asList(
                 Filters.eq("$set",
                         Filters.eq("tag_list",
                                 Filters.eq("$concat",
-                                        Arrays.asList("$tag_list", ", ", phone)
+                                        Arrays.asList("$tag_list", ", phone")
                                 )
                         )
                 )
@@ -82,7 +86,7 @@ public class Client {
         collection.updateMany(new Document(), update);
         collection.updateMany(new Document("tag_list",null), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es null
         collection.updateMany(new Document("tag_list", ", phone"), new Document("$set", new Document("tag_list", "phone"))); //casos en que tag_list es ", phone" (por el update que se hace arriba)
-        System.out.println("Phone appended in tag_list");
+
     }
 
     /**
